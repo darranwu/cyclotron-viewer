@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyclotron Viewer</title>
+</head>
+<body style="background-color:black; margin: 0px;">
+    <canvas id="display"></canvas>
+    <video style="display:none" id='video'></video>
+<script type="text/javascript">
+    var constraints = {audio: false, video: { facingMode: "environment"}};
+
+    var v = navigator.mediaDevices.getUserMedia(constraints);
+
+    v.then(function(mediastream) {
+        var video = document.querySelector('video');
+        video.src = window.URL.createObjectURL(mediastream);
+        video.onloadedmetadata = function(e) {
+            video.play();
+        };
+    })
+    .catch(function(e) { console.log(e.name); });
+
+    var canvas = document.getElementById('display'),
+        ctx = canvas.getContext('2d'),
+        frame = document.createElement('canvas'),
+        fctx = frame.getContext('2d');
+
+    screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
+    // TODO: listen for changes here
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    frame.width = window.innerWidth;
+    frame.height = window.innerHeight;
+
+    
+    var lastDimmed = 0,
+        msPerDim = 25;
+
+    video.addEventListener("playing", blendWithLast, false);
+    function blendWithLast() {
+        // Get a new frame
+        fctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        var now = Performance.now();
+
+        if (lastDimmed == 0) {
+            lastDimmed = now;  // Initialisation
+        }
+        var ptsToDim = Math.floor((now - lastDimmed) / msPerDim);
+
+        if (ptsToDim > 0) {
+            ptsToDim = Math.min(ptsToDim, 255);
+            // dim old pixels slightly by overlaying slightly-transparent layer 
+            ctx.fillStyle = "RGBA(0,0,0," + ptsToDim/255 + ")";
+            ctx.globalCompositeOperation = "source-over";
+            ctx.fillRect(0, 0, frame.width, frame.height);
+            lastDimmed += ptsToDim * msPerDim;
+        }
+
+        // pix = max(new_pix, old_pix (maybe dimmed))
+        ctx.globalCompositeOperation = "lighten"
+        // ctx.globalAlpha = 1;  // How does it interact with < 1?
+        ctx.drawImage(frame, 0, 0);
+
+        requestAnimationFrame(blendWithLast);
+    }
+</script>
+</body>
+</html>
