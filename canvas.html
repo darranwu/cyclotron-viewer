@@ -8,6 +8,18 @@
     <video style="display:none" id='video'></video>
 <script type="text/javascript">
     var constraints = {audio: false, video: { facingMode: "environment"}};
+    // var constraints = {audio: false, video: true}; // Chromium
+
+    if (!navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia = 
+         function(c) {
+          return new Promise(function(y, n) {
+            (navigator.mozGetUserMedia ||
+             navigator.webkitGetUserMedia).call(navigator, c, y, n);
+          });
+        }
+
+    }
 
     var v = navigator.mediaDevices.getUserMedia(constraints);
 
@@ -25,7 +37,7 @@
         frame = document.createElement('canvas'),
         fctx = frame.getContext('2d');
 
-    screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
+    // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
     // TODO: listen for changes here
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -42,14 +54,14 @@
         // Get a new frame
         fctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        var now = Performance.now();
+        var now = performance.now();
 
         if (lastDimmed == 0) {
             lastDimmed = now;  // Initialisation
         }
         var ptsToDim = Math.floor((now - lastDimmed) / msPerDim);
 
-        if (ptsToDim > 0) {
+        if (ptsToDim > 3) {
             ptsToDim = Math.min(ptsToDim, 255);
             // dim old pixels slightly by overlaying slightly-transparent layer 
             ctx.fillStyle = "RGBA(0,0,0," + ptsToDim/255 + ")";
