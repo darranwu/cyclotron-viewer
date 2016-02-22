@@ -6,15 +6,19 @@
     <title>Cyclotron Viewer</title>
 </head>
 <body style="background-color:black; margin: 0px;">
-    <canvas id="display"></canvas>
+        
+    <canvas id="display" style="object-fit: cover; height:100vh; width:100vw; z-index: -1"></canvas>
     <video style="display:none;" id="video" autoplay></video>
-    <button id='cameraToggleForChrome' style="display: none; position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">Switch camera</button>
+    <footer style="position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">
+        <button id="cameraToggleForChrome" style="display: none;">Switch camera</button>
+        <button id="takePhoto">Take Photo</button>
+    </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript">
 
     if (webrtcDetectedBrowser != 'chrome') {
-        var constraints = {audio: false, video: { facingMode: "environment" }};
+        var constraints = {audio: false, video: { facingMode: 'environment' }};
         attachStream(constraints);
     } else {
         var chromeVideoDeviceInfos;
@@ -26,61 +30,25 @@
         navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
             video.srcObject = stream;
-            video.addEventListener("loadedmetadata",
-                function(e) {
-                    console.log('loaded metadata');
-                    frame.width = video.videoWidth;
-                    frame.height = video.videoHeight;
-
-                    setCanvasScales();
-                }
-            );
+            video.addEventListener('loadedmetadata', function(e) {
+                console.log('loaded metadata');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+            });
         })
         .catch(err => console.error(err));
     }
 
     var canvas = document.getElementById('display'),
-        ctx = canvas.getContext('2d'),
-        frame = document.createElement('canvas'),
-        fctx = frame.getContext('2d');
-        fscale = {sx: null, sy: null, sWidth: null, sHeight: null};
+        ctx = canvas.getContext('2d');
 
     // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
     
     var lastDimmed = 0,
         msPerDim = 25;
 
-    window.addEventListener('resize', setCanvasScales);
-    function setCanvasScales() {
-        // seems to blank the slate - but might need to do this explicitly.
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        if (frame.height / frame.width > canvas.height / canvas.width) {
-            console.log('video is taller');
-            // taller than canvas: scale widths to be equal, chop y
-            var heightDiff = frame.height - canvas.height / canvas.width * frame.width;
-            fscale.sx = 0;
-            fscale.sy = heightDiff / 2;
-            fscale.sWidth = frame.width;
-            fscale.sHeight = frame.height - heightDiff;
-        } else {
-            console.log('video is wider');
-            // wider than canvas: scale heights to be equal, chop x
-            var widthDiff = frame.width - canvas.width / canvas.height * frame.height;
-            fscale.sx = widthDiff / 2;
-            fscale.sy = 0;
-            fscale.sWidth = frame.width - widthDiff;
-            fscale.sHeight = frame.height;
-        }
-    }
-
-    video.addEventListener("playing", blendWithLast, false);
+    video.addEventListener('playing', blendWithLast, false);
     function blendWithLast() {
-        // Get a new frame
-        fctx.drawImage(video, 0, 0);
 
         var now = performance.now();
 
@@ -92,16 +60,18 @@
         if (ptsToDim > 3) {
             ptsToDim = Math.min(ptsToDim, 255);
             // dim old pixels slightly by overlaying slightly-transparent layer 
-            ctx.fillStyle = "RGBA(0,0,0," + ptsToDim/255 + ")";
-            ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = 'RGBA(0,0,0,' + ptsToDim/255 + ')';
+            ctx.globalCompositeOperation = 'source-over';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             lastDimmed += ptsToDim * msPerDim;
         }
 
         // pix = max(new_pix, old_pix (maybe dimmed))
-        ctx.globalCompositeOperation = "lighten"
+        ctx.globalCompositeOperation = 'lighten'
         // ctx.globalAlpha = 1;  // How does it interact with < 1?
-        ctx.drawImage(frame, fscale.sx, fscale.sy, fscale.sWidth, fscale.sHeight, 0, 0, canvas.width, canvas.height);
+
+        // Get a new frame
+        ctx.drawImage(video, 0, 0);
 
         requestAnimationFrame(blendWithLast);
     }
@@ -114,13 +84,9 @@
 
     function gotDevicesForChrome(deviceInfos) {
         console.log(deviceInfos);
-        chromeVideoDeviceInfos = deviceInfos.filter(function(el, i, arr) {
-            if (el.kind === 'videoinput') {
-                return true;
-            } else {
-                return false;
-            }
-        });
+        chromeVideoDeviceInfos = deviceInfos.filter(
+            (el, i, arr) => (el.kind === 'videoinput') 
+        );
         if (chromeVideoDeviceInfos.length > 1) {
             showCameraToggleButtonForChrome();
         }
