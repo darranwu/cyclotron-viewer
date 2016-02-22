@@ -8,7 +8,7 @@
 <body style="background-color:black; margin: 0px;">
     <canvas id="display"></canvas>
     <video style="display:none;" id="video" autoplay></video>
-    <button id='cameraToggleForChrome' style="display: none; position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">Chrome sux</button>
+    <button id='cameraToggleForChrome' style="display: none; position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">Switch camera</button>
 
 <script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript">
@@ -121,7 +121,7 @@
                 return false;
             }
         });
-        if (chromeVideoDeviceInfos.length > 0) { // FIXME: should be 1
+        if (chromeVideoDeviceInfos.length > 1) {
             showCameraToggleButtonForChrome();
         }
         var constraints = {audio: false, video: { deviceId: chromeVideoDeviceInfos[chromeVideoDeviceIndex].deviceId }};
@@ -129,7 +129,9 @@
     }
 
     function changeDeviceForChrome() {
-        chromeVideoDeviceIndex = chromeVideoDeviceIndex + 1 % chromeVideoDeviceInfos.length;
+        chromeVideoDeviceIndex = (chromeVideoDeviceIndex + 1) % chromeVideoDeviceInfos.length;
+        var constraints = {audio: false, video: { deviceId: chromeVideoDeviceInfos[chromeVideoDeviceIndex].deviceId }};
+        attachStream(constraints);
     }
 
     function showCameraToggleButtonForChrome() {
