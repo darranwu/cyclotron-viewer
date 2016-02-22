@@ -1,58 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset='utf-8'>
+
     <title>Cyclotron Viewer</title>
+    <script type="text/javascript" src="js/adapter.js"></script>
 </head>
 <body style="background-color:black; margin: 0px;">
     <canvas id="display"></canvas>
-    <video style="display:none" id='video'></video>
+    <video style="display:none;" id="video" autoplay></video>
 <script type="text/javascript">
-    var constraints = {audio: false, video: { facingMode: "environment"}};
-    // var constraints = {audio: false, video: true}; // Chromium
 
-    if (!navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia = 
-         function(c) {
-          return new Promise(function(y, n) {
-            (navigator.mozGetUserMedia ||
-             navigator.webkitGetUserMedia).call(navigator, c, y, n);
-          });
-        }
+    var constraints = {audio: false, video: { facingMode: "environment" }};
 
-    }
+    var v = navigator.mediaDevices.getUserMedia(constraints)
+        .then(function(stream) {
+            video.srcObject = stream;
+            video.addEventListener("loadedmetadata",
+                function(e) {
+                    console.log('loaded metadata');
+                    frame.width = video.videoWidth;
+                    frame.height = video.videoHeight;
 
-    var v = navigator.mediaDevices.getUserMedia(constraints);
-
-    v.then(function(mediastream) {
-        var video = document.querySelector('video');
-        video.src = window.URL.createObjectURL(mediastream);
-        video.onloadedmetadata = function(e) {
-            video.play();
-        };
-    })
-    .catch(function(e) { console.log(e.name); });
+                    setCanvasScales();
+                }
+            );
+        })
+        .catch(err => console.error(err));
 
     var canvas = document.getElementById('display'),
         ctx = canvas.getContext('2d'),
         frame = document.createElement('canvas'),
         fctx = frame.getContext('2d');
+        fscale = {sx: null, sy: null, sWidth: null, sHeight: null};
 
     // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
     // TODO: listen for changes here
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    frame.width = window.innerWidth;
-    frame.height = window.innerHeight;
-
     
     var lastDimmed = 0,
         msPerDim = 25;
 
+    window.addEventListener('resize', setCanvasScales);
+    function setCanvasScales() {
+        // TODO: explicitly blank the slate first?
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        if (frame.height / frame.width > canvas.height / canvas.width) {
+            console.log('video is taller');
+            // taller than canvas: scale widths to be equal, chop y
+            var heightDiff = frame.height - canvas.height / canvas.width * frame.width;
+            fscale.sx = 0;
+            fscale.sy = heightDiff / 2;
+            fscale.sWidth = frame.width;
+            fscale.sHeight = frame.height - heightDiff;
+        } else {
+            console.log('video is wider');
+            // wider than canvas: scale heights to be equal, chop x
+            var widthDiff = frame.width - canvas.width / canvas.height * frame.height;
+            fscale.sx = widthDiff / 2;
+            fscale.sy = 0;
+            fscale.sWidth = frame.width - widthDiff;
+            fscale.sHeight = frame.height;
+        }
+    }
+
     video.addEventListener("playing", blendWithLast, false);
     function blendWithLast() {
         // Get a new frame
-        fctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        fctx.drawImage(video, 0, 0);
 
         var now = performance.now();
 
@@ -66,14 +84,14 @@
             // dim old pixels slightly by overlaying slightly-transparent layer 
             ctx.fillStyle = "RGBA(0,0,0," + ptsToDim/255 + ")";
             ctx.globalCompositeOperation = "source-over";
-            ctx.fillRect(0, 0, frame.width, frame.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             lastDimmed += ptsToDim * msPerDim;
         }
 
         // pix = max(new_pix, old_pix (maybe dimmed))
         ctx.globalCompositeOperation = "lighten"
         // ctx.globalAlpha = 1;  // How does it interact with < 1?
-        ctx.drawImage(frame, 0, 0);
+        ctx.drawImage(frame, fscale.sx, fscale.sy, fscale.sWidth, fscale.sHeight, 0, 0, canvas.width, canvas.height);
 
         requestAnimationFrame(blendWithLast);
     }
