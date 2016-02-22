@@ -4,16 +4,26 @@
     <meta charset='utf-8'>
 
     <title>Cyclotron Viewer</title>
-    <script type="text/javascript" src="js/adapter.js"></script>
 </head>
 <body style="background-color:black; margin: 0px;">
     <canvas id="display"></canvas>
     <video style="display:none;" id="video" autoplay></video>
+    <button id='cameraToggleForChrome' style="display: none; position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">Chrome sux</button>
+
+<script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript">
 
-    var constraints = {audio: false, video: { facingMode: "environment" }};
+    if (webrtcDetectedBrowser != 'chrome') {
+        var constraints = {audio: false, video: { facingMode: "environment" }};
+        attachStream(constraints);
+    } else {
+        var chromeVideoDeviceInfos;
+        var chromeVideoDeviceIndex = 0;
+        getSourcesForChrome();
+    }
 
-    var v = navigator.mediaDevices.getUserMedia(constraints)
+    function attachStream(constraints) {
+        navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
             video.srcObject = stream;
             video.addEventListener("loadedmetadata",
@@ -27,6 +37,7 @@
             );
         })
         .catch(err => console.error(err));
+    }
 
     var canvas = document.getElementById('display'),
         ctx = canvas.getContext('2d'),
@@ -35,7 +46,6 @@
         fscale = {sx: null, sy: null, sWidth: null, sHeight: null};
 
     // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
-    // TODO: listen for changes here
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
@@ -44,7 +54,7 @@
 
     window.addEventListener('resize', setCanvasScales);
     function setCanvasScales() {
-        // TODO: explicitly blank the slate first?
+        // seems to blank the slate - but might need to do this explicitly.
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
@@ -94,6 +104,40 @@
         ctx.drawImage(frame, fscale.sx, fscale.sy, fscale.sWidth, fscale.sHeight, 0, 0, canvas.width, canvas.height);
 
         requestAnimationFrame(blendWithLast);
+    }
+
+    function getSourcesForChrome() {
+        navigator.mediaDevices.enumerateDevices()
+            .then(gotDevicesForChrome)
+            .catch(err => console.error(err));
+    }
+
+    function gotDevicesForChrome(deviceInfos) {
+        console.log(deviceInfos);
+        chromeVideoDeviceInfos = deviceInfos.filter(function(el, i, arr) {
+            if (el.kind === 'videoinput') {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (chromeVideoDeviceInfos.length > 0) { // FIXME: should be 1
+            showCameraToggleButtonForChrome();
+        }
+        var constraints = {audio: false, video: { deviceId: chromeVideoDeviceInfos[chromeVideoDeviceIndex].deviceId }};
+        attachStream(constraints);
+    }
+
+    function changeDeviceForChrome() {
+        chromeVideoDeviceIndex = chromeVideoDeviceIndex + 1 % chromeVideoDeviceInfos.length;
+    }
+
+    function showCameraToggleButtonForChrome() {
+        cameraToggleForChrome.style.display = 'block';
+        cameraToggleForChrome.addEventListener('click', function(ev){
+            changeDeviceForChrome();
+            ev.preventDefault();
+        }, false);
     }
 </script>
 </body>
