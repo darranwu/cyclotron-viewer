@@ -28,12 +28,13 @@
     }
 
     function attachStream(constraints) {
-        // if (window.stream) {
-        //     window.stream.getTracks().forEach(track => track.stop());
-        // }
+        if (window.stream) {
+            // Required for Chrome
+            window.stream.getTracks().forEach(track => track.stop());
+        }
         navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
-            // window.stream = stream; // unsure if required
+            window.stream = stream;
             video.srcObject = stream;
         })
         .catch(err => console.error(err));
