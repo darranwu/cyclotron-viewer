@@ -9,9 +9,9 @@
         
     <canvas id="display" style="object-fit: cover; height:100vh; width:100vw; z-index: -1"></canvas>
     <video style="display:none;" id="video" autoplay></video>
-    <footer style="position: fixed; left: 0px; bottom: 0px; height: 30px; width: 100%;">
-        <button id="cameraToggleForChrome" style="display: none;">Switch camera</button>
-        <button id="takePhoto">Take Photo</button>
+    <footer style="position: fixed; left: 0px; bottom: 0px; height: 10vh; width: 100%;">
+        <button id="cameraToggleForChrome" style="display: none; height:100%">Switch camera</button>
+        <button id="takePhoto" style="height:100%;">Take Photo</button>
     </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
@@ -27,14 +27,13 @@
     }
 
     function attachStream(constraints) {
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => track.stop());
+        }
         navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
+            window.stream = stream; // unsure if required
             video.srcObject = stream;
-            video.addEventListener('loadedmetadata', function(e) {
-                console.log('loaded metadata');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-            });
         })
         .catch(err => console.error(err));
     }
@@ -42,6 +41,11 @@
     var canvas = document.getElementById('display'),
         ctx = canvas.getContext('2d');
 
+    video.addEventListener('resize', function(e) {
+        console.log('video resized');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+    });
     // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
     
     var lastDimmed = 0,
