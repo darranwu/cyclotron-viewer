@@ -9,10 +9,9 @@
         
     <canvas id="display" style="object-fit: cover; height:100vh; width:100vw; z-index: -1"></canvas>
     <video style="display:none;" id="video" autoplay></video>
-    <img style="display:none;" id="still" alt="Your photo memory">
     <footer style="position: fixed; left: 0px; bottom: 0px; height: 10vh; width: 100%;">
         <button id="cameraToggleForChrome" style="display: none; height:100%">Switch camera</button>
-        <button id="takePhoto" style="height:100%;">Take Photo</button>
+        <button id="takePhotoButton" style="height:100%;">Take Photo</button>
     </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
@@ -80,6 +79,16 @@
         ctx.drawImage(video, 0, 0);
 
         requestAnimationFrame(blendWithLast);
+    }
+
+    takePhotoButton.addEventListener('click', takePhoto);
+    function takePhoto() {
+        var link = document.createElement('a');
+        link.download = 'cyclotron.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function getSourcesForChrome() {
