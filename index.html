@@ -12,9 +12,12 @@
     <footer style="position: fixed; left: 0px; bottom: 0px; height: 10vh; width: 100%;">
         <button id="cameraToggleForChrome" style="display: none; height:100%">Switch camera</button>
         <button id="takePhotoButton" style="height:100%;">Take Photo</button>
+        <button id="recordVideoButton" style="height:100%;">Record Video</button>
     </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
+<script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script>
+<script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
 <script type="text/javascript">
 
     if (webrtcDetectedBrowser != 'chrome') {
@@ -83,9 +86,25 @@
 
     takePhotoButton.addEventListener('click', takePhoto);
     function takePhoto() {
+        download('cyclotron.png', canvas.toDataURL('image/png'));
+    }
+
+    recordVideoButton.addEventListener('click', recordVideo);
+    function recordVideo() {
+        var options = {
+           type: 'canvas'
+        };
+        var recordRTC = RecordRTC(canvas, options);
+        recordRTC.setRecordingDuration(
+            5 * 1000, gifURL => recordRTC.save('bla.webm')
+        );
+        recordRTC.startRecording();
+    }
+
+    function download(filename, dataURL) {
         var link = document.createElement('a');
-        link.download = 'cyclotron.png';
-        link.href = canvas.toDataURL('image/png');
+        link.download = filename;
+        link.href = dataURL;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -116,7 +135,7 @@
     }
 
     function showCameraToggleButtonForChrome() {
-        cameraToggleForChrome.style.display = 'block';
+        cameraToggleForChrome.style.display = '';
         cameraToggleForChrome.addEventListener('click', function(ev){
             changeDeviceForChrome();
             ev.preventDefault();
