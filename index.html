@@ -4,21 +4,76 @@
     <meta charset='utf-8'>
 
     <title>Cyclotron Viewer</title>
+
+    <style>
+    #display {
+        object-fit: cover;
+        height: 100vh;
+        width: 100vw;
+        z-index: -1;
+    }
+    #video {display: none;}
+
+    footer {
+        position: fixed;
+        left: 0px;
+        bottom: 0px;
+        height: 10vh;
+        width: 100%;
+        padding: 2vh;
+    }
+
+    #cameraToggleForChrome {
+        display: none;
+        height: 100%;
+        float: left;
+        width: 64px;
+        cursor: pointer;
+    }
+    #takePhotoButton {
+        margin-left: auto;
+        margin-right: auto;
+        width: 80px;
+        height: 100%;
+        cursor: pointer;
+    }
+    #recordVideoButton {
+        height: 100%;
+        display: none;
+        float: right;
+        cursor: pointer;
+    }
+    footer img {
+        height: 100%;
+    }
+    </style>
 </head>
 <body style="background-color:black; margin: 0px;">
         
-    <canvas id="display" style="object-fit: cover; height:100vh; width:100vw; z-index: -1"></canvas>
-    <video style="display:none;" id="video" autoplay></video>
-    <footer style="position: fixed; left: 0px; bottom: 0px; height: 10vh; width: 100%;">
-        <button id="cameraToggleForChrome" style="display: none; height:100%">Switch camera</button>
-        <button id="takePhotoButton" style="height:100%;">Take Photo</button>
-        <button id="recordVideoButton" style="height:100%;">Record Video</button>
+    <canvas id="display"></canvas>
+    <video id="video" autoplay></video>
+    <footer>
+        <div id="cameraToggleForChrome">
+            <img src="img/switch-camera.png">
+        </div>
+        <!-- <button id="recordVideoButton">Record Video</button> -->
+        <div id="takePhotoButton">
+            <img src="img/logosmall.png">
+        </div>
     </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
-<script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script>
+<!-- <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script> -->
 <script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
 <script type="text/javascript">
+
+    var uagent = navigator.userAgent.toLowerCase();
+    if (/safari/.test(uagent) && !/chrome/.test(uagent))
+    {
+        // I apologise to any desktop Safari users who have Temasys
+        // installed. But this is mostly targeted at mobile users anyway.
+        window.location.href = "https://www.safari-is-the-new-ie.com/"
+    }
 
     if (webrtcDetectedBrowser != 'chrome') {
         var constraints = {audio: false, video: { facingMode: 'environment' }};
@@ -136,6 +191,7 @@
 
     function showCameraToggleButtonForChrome() {
         cameraToggleForChrome.style.display = '';
+        recordVideoButton.style.display = '';
         cameraToggleForChrome.addEventListener('click', function(ev){
             changeDeviceForChrome();
             ev.preventDefault();
