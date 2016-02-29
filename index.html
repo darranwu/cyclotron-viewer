@@ -24,16 +24,19 @@
         padding-bottom: 3vh;
         padding-left: 3vw;
         padding-right: 3vw;
+        z-index: 1;
     }
 
     #cameraToggleForChrome {
         display: none;
-        height: 100%;
-        float: left;
-        width: 64px;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        height: 6vh;
+        position: absolute;
         cursor: pointer;
     }
     #takePhotoButton {
+        display: block;
         margin-left: auto;
         margin-right: auto;
         height: 100%;
@@ -45,10 +48,6 @@
         float: right;
         cursor: pointer;
     }
-    footer img {
-        display: block;
-        height: 100%;
-    }
     </style>
 </head>
 <body style="background-color:black; margin: 0px;">
@@ -56,10 +55,10 @@
     <canvas id="display"></canvas>
     <video id="video" autoplay></video>
     <footer>
-        <div id="cameraToggleForChrome">
-            <img src="img/switch-camera.png">
+        <img src="img/switch-camera.png" id="cameraToggleForChrome">
+<!--         <div id="cameraToggleForChrome">
         </div>
-        <!-- <button id="recordVideoButton">Record Video</button> -->
+ -->        <!-- <button id="recordVideoButton">Record Video</button> -->
         <img id="takePhotoButton" src="img/logosmall.png">
     </footer>
 
@@ -73,7 +72,7 @@
     {
         // I apologise to any desktop Safari users who have Temasys
         // installed. But this viewer is mostly targeted at mobile users anyway.
-        window.location.href = "https://www.safari-is-the-new-ie.com/"
+        window.location.href = "https://www.safari-is-the-new-ie.com/";
     }
 
     if (webrtcDetectedBrowser != 'chrome') {
