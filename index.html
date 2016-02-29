@@ -34,7 +34,7 @@
         margin-left: auto;
         margin-right: auto;
         width: 80px;
-        height: 100%;
+        height: 38px;
         cursor: pointer;
     }
     #recordVideoButton {
@@ -44,6 +44,7 @@
         cursor: pointer;
     }
     footer img {
+        display: block;
         height: 100%;
     }
     </style>
@@ -68,10 +69,10 @@
 <script type="text/javascript">
 
     var uagent = navigator.userAgent.toLowerCase();
-    if (/safari/.test(uagent) && !/chrome/.test(uagent))
+    if (/iphone/.test(uagent) || (/safari/.test(uagent) && !/chrome/.test(uagent)))
     {
         // I apologise to any desktop Safari users who have Temasys
-        // installed. But this is mostly targeted at mobile users anyway.
+        // installed. But this viewer is mostly targeted at mobile users anyway.
         window.location.href = "https://www.safari-is-the-new-ie.com/"
     }
 
