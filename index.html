@@ -19,8 +19,11 @@
         left: 0px;
         bottom: 0px;
         height: 8vh;
-        width: 100%;
-        padding: 3vh;
+        width: 94vw;
+        padding-top: 3vh;
+        padding-bottom: 3vh;
+        padding-left: 3vw;
+        padding-right: 3vw;
     }
 
     #cameraToggleForChrome {
@@ -142,17 +145,17 @@
         download('cyclotron.png', canvas.toDataURL('image/png'));
     }
 
-    recordVideoButton.addEventListener('click', recordVideo);
-    function recordVideo() {
-        var options = {
-           type: 'canvas'
-        };
-        var recordRTC = RecordRTC(canvas, options);
-        recordRTC.setRecordingDuration(
-            5 * 1000, gifURL => recordRTC.save('bla.webm')
-        );
-        recordRTC.startRecording();
-    }
+    // recordVideoButton.addEventListener('click', recordVideo);
+    // function recordVideo() {
+    //     var options = {
+    //        type: 'canvas'
+    //     };
+    //     var recordRTC = RecordRTC(canvas, options);
+    //     recordRTC.setRecordingDuration(
+    //         5 * 1000, gifURL => recordRTC.save('bla.webm')
+    //     );
+    //     recordRTC.startRecording();
+    // }
 
     function download(filename, dataURL) {
         var link = document.createElement('a');
@@ -189,7 +192,7 @@
 
     function showCameraToggleButtonForChrome() {
         cameraToggleForChrome.style.display = '';
-        recordVideoButton.style.display = '';
+        // recordVideoButton.style.display = '';
         cameraToggleForChrome.addEventListener('click', function(ev){
             changeDeviceForChrome();
             ev.preventDefault();
