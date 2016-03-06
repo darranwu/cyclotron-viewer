@@ -6,6 +6,12 @@
     <title>Cyclotron Viewer</title>
 
     <style>
+    body, html {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+    }
     #display {
         object-fit: cover;
         height: 100vh;
@@ -16,10 +22,8 @@
 
     footer {
         position: fixed;
-        left: 0px;
+        right: 0px;
         bottom: 0px;
-        height: 8vh;
-        width: 94vw;
         padding-top: 3vh;
         padding-bottom: 3vh;
         padding-left: 3vw;
@@ -29,36 +33,69 @@
 
     #cameraToggleForChrome {
         display: none;
-        padding-top: 1vh;
-        padding-bottom: 1vh;
-        height: 6vh;
         position: absolute;
         cursor: pointer;
     }
+
     #takePhotoButton {
         display: block;
-        margin-left: auto;
-        margin-right: auto;
-        height: 100%;
         cursor: pointer;
     }
     #recordVideoButton {
-        height: 100%;
         display: none;
-        float: right;
         cursor: pointer;
+    }
+        
+    @media (orientation: portrait) {
+        footer {
+            height: 8vh;
+            width: 94vw;
+        }
+
+        #cameraToggleForChrome {
+            height: 8vh;
+        }
+
+        #takePhotoButton {
+            margin-left: auto;
+            margin-right: auto;
+            height: 100%;
+        }
+        #recordVideoButton {
+            height: 100%;
+        }
+
+    }
+
+    @media (orientation: landscape) {
+        footer {
+            height: 94vh;
+            width: 8vw;
+        }
+
+        #cameraToggleForChrome {
+            width: 8vw;
+            bottom: 0;
+        }
+
+        #takePhotoButton {
+            width: 8vw;
+            position: absolute;
+            bottom: 50vh;
+            margin-bottom: -4vw;
+        }
+    }
+
     }
     </style>
 </head>
-<body style="background-color:black; margin: 0px;">
+<body style="background-color:black;">
         
     <canvas id="display"></canvas>
     <video id="video" autoplay></video>
     <footer>
         <img src="img/switch-camera.png" id="cameraToggleForChrome">
-<!--         <div id="cameraToggleForChrome">
-        </div>
- -->        <!-- <button id="recordVideoButton">Record Video</button> -->
+        <!-- <button id="recordVideoButton">Record Video</button> -->
         <img id="takePhotoButton" src="img/shutter-button.png">
     </footer>
 
@@ -141,6 +178,12 @@
 
     takePhotoButton.addEventListener('click', takePhoto);
     function takePhoto() {
+        ctx.globalCompositeOperation = 'source-over'
+        var dWidth = canvas.width * 0.15,
+            dHeight = dWidth / logoWatermark.width * logoWatermark.height,
+            dx = canvas.width * 0.98 - dWidth,
+            dy = canvas.height * 0.98 - dHeight;
+        ctx.drawImage(logoWatermark, dx, dy, dWidth, dHeight);
         download('cyclotron.png', canvas.toDataURL('image/png'));
     }
 
@@ -199,5 +242,8 @@
         }, false);
     }
 </script>
+<div id="invisible-assets" style="display:none;">
+    <img id="logoWatermark" src="img/logo.svg">
+</div>
 </body>
 </html>
