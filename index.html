@@ -142,7 +142,6 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
     });
-    // screen.mozLockOrientation('portrait-primary'); // TODO: remove if only for web app
     
     var lastDimmed = 0,
         msPerDim = 25;
@@ -168,7 +167,6 @@
 
         // pix = max(new_pix, old_pix (maybe dimmed))
         ctx.globalCompositeOperation = 'lighten'
-        // ctx.globalAlpha = 1;  // How does it interact with < 1?
 
         // Get a new frame
         ctx.drawImage(video, 0, 0);
@@ -179,7 +177,7 @@
     takePhotoButton.addEventListener('click', takePhoto);
     function takePhoto() {
         ctx.globalCompositeOperation = 'source-over'
-        var dWidth = Math.max(canvas.width, canvas.height) * 0.2,
+        var dWidth = Math.max(canvas.width, canvas.height) * 0.17,
             dHeight = dWidth / logoWatermark.width * logoWatermark.height,
             dx = canvas.width * 0.98 - dWidth,
             dy = canvas.height * 0.98 - dHeight;
