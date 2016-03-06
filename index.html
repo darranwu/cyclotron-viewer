@@ -179,7 +179,7 @@
     takePhotoButton.addEventListener('click', takePhoto);
     function takePhoto() {
         ctx.globalCompositeOperation = 'source-over'
-        var dWidth = canvas.width * 0.15,
+        var dWidth = Math.max(canvas.width, canvas.height) * 0.2,
             dHeight = dWidth / logoWatermark.width * logoWatermark.height,
             dx = canvas.width * 0.98 - dWidth,
             dy = canvas.height * 0.98 - dHeight;
