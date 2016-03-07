@@ -40,6 +40,14 @@
     #takePhotoButton {
         display: block;
         cursor: pointer;
+        border: 0;
+        background: transparent;
+        padding: 0;
+    }
+
+    #takePhotoButton img {
+        height: 100%;
+        width: 100%;
     }
 
     #recordVideoButton {
@@ -61,7 +69,8 @@
         #takePhotoButton {
             margin-left: auto;
             margin-right: auto;
-            height: 100%;
+            height: 12vh;
+            width: 12vh;
         }
         #recordVideoButton {
             height: 100%;
@@ -82,6 +91,7 @@
         }
 
         #takePhotoButton {
+            height: 12vw;
             width: 12vw;
             position: absolute;
             bottom: 50vh;
@@ -97,11 +107,11 @@
 </head>
 <body style="background-color:black;">
     <div id="browserNotSupported">
-        <h1>Sorry!</h1>
+        <h1>Fail!</h1>
         <p>It looks like this browser can't Cyclotron.</p> 
-        <p>If you're on Android, then try <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.</p>
+        <p>If you're on Android, then try an up-to-date version of <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.</p>
         <p>
-            If you're on an iPhone, then unfortunately you're out of luck &mdash; Apple haven't put the necessary technology into Safari, and they've decided you shouldn't have the right to choose a better browser. Facism sucks, hey? At least they spy on you less than Google.
+            If you're on an iPhone, then unfortunately you're out of luck &ndash; Apple haven't put the necessary technology into Safari, and they've decided you shouldn't have the right to choose a better browser. Facism sucks, hey? At least they spy on you less than Google does. In the meantime, you'll have to go borrow someone with Android, or use your laptop with Firefox or Chrome.
         </p>
     </div>
     <canvas id="display"></canvas>
@@ -109,17 +119,16 @@
     <footer>
         <img src="img/switch-camera.png" id="cameraToggleForChrome">
         <!-- <button id="recordVideoButton">Record Video</button> -->
-        <img id="takePhotoButton" src="img/shutter-button.png">
+        <button id="takePhotoButton">
+            <img src="img/shutter-button.png" />
+        </button>
     </footer>
 
 <script type="text/javascript" src="js/adapter.js"></script>
 <!-- <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script> -->
 <script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
 <script type="text/javascript">
-
-    var uagent = navigator.userAgent.toLowerCase();
-    if (!navigator.mediaDevices.getUserMedia)
-    {
+    function abandonShip() {
         document.getElementsByTagName('footer')[0].style.display = 'none'
         var body = document.getElementsByTagName('body')[0];
         body.style.backgroundColor = 'white';
@@ -128,6 +137,11 @@
         body.style.height = 'auto';
         display.style.display = 'none';
         browserNotSupported.style.display = 'inline';
+    }
+
+    if (!webrtcMinimumVersion || !webrtcDetectedVersion || webrtcDetectedVersion < webrtcMinimumVersion)
+    {
+        abandonShip()
     }
 
     if (webrtcDetectedBrowser != 'chrome') {
@@ -203,16 +217,16 @@
         download('cyclotron.png', canvas.toDataURL('image/png'));
     }
     takePhotoButton.addEventListener('mousedown', function(){
-        takePhotoButton.src = "img/shutter-pressed.png";
+        takePhotoButton.firstElementChild.src = "img/shutter-pressed.png";
     });
     takePhotoButton.addEventListener('touchstart', function(){
-        takePhotoButton.src = "img/shutter-pressed.png";
+        takePhotoButton.firstElementChild.src = "img/shutter-pressed.png";
     });
-    takePhotoButton.addEventListener('mouseup', function(){
-        takePhotoButton.src = "img/shutter-button.png";
+    window.addEventListener('mouseup', function(){
+        takePhotoButton.firstElementChild.src = "img/shutter-button.png";
     });
-    takePhotoButton.addEventListener('touchend', function(){
-        takePhotoButton.src = "img/shutter-button.png";
+    window.addEventListener('touchend', function(){
+        takePhotoButton.firstElementChild.src = "img/shutter-button.png";
     });
 
     // recordVideoButton.addEventListener('click', recordVideo);
