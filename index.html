@@ -41,6 +41,7 @@
         display: block;
         cursor: pointer;
     }
+
     #recordVideoButton {
         display: none;
         cursor: pointer;
@@ -48,11 +49,12 @@
         
     @media (orientation: portrait) {
         footer {
-            height: 8vh;
+            height: 12vh;
             width: 94vw;
         }
 
         #cameraToggleForChrome {
+            margin: 2vh;
             height: 8vh;
         }
 
@@ -70,27 +72,38 @@
     @media (orientation: landscape) {
         footer {
             height: 94vh;
-            width: 8vw;
+            width: 12vw;
         }
 
         #cameraToggleForChrome {
             width: 8vw;
             bottom: 0;
+            margin: 2vh;
         }
 
         #takePhotoButton {
-            width: 8vw;
+            width: 12vw;
             position: absolute;
             bottom: 50vh;
-            margin-bottom: -4vw;
+            margin-bottom: -6vw;
         }
     }
 
+    #browserNotSupported {
+        display: none;
+        background-color: white;
     }
     </style>
 </head>
 <body style="background-color:black;">
-        
+    <div id="browserNotSupported">
+        <h1>Sorry!</h1>
+        <p>It looks like this browser can't Cyclotron.</p> 
+        <p>If you're on Android, then try <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.</p>
+        <p>
+            If you're on an iPhone, then unfortunately you're out of luck &mdash; Apple haven't put the necessary technology into Safari, and they've decided you shouldn't have the right to choose a better browser. Facism sucks, hey? At least they spy on you less than Google.
+        </p>
+    </div>
     <canvas id="display"></canvas>
     <video id="video" autoplay></video>
     <footer>
@@ -105,11 +118,16 @@
 <script type="text/javascript">
 
     var uagent = navigator.userAgent.toLowerCase();
-    if (/iphone/.test(uagent) || (/safari/.test(uagent) && !/chrome/.test(uagent)))
+    if (!navigator.mediaDevices.getUserMedia)
     {
-        // I apologise to any desktop Safari users who have Temasys
-        // installed. But this viewer is mostly targeted at mobile users anyway.
-        window.location.href = "https://www.safari-is-the-new-ie.com/"
+        document.getElementsByTagName('footer')[0].style.display = 'none'
+        var body = document.getElementsByTagName('body')[0];
+        body.style.backgroundColor = 'white';
+        body.style.margin = '20px';
+        body.style.width = 'auto';
+        body.style.height = 'auto';
+        display.style.display = 'none';
+        browserNotSupported.style.display = 'inline';
     }
 
     if (webrtcDetectedBrowser != 'chrome') {
@@ -184,6 +202,18 @@
         ctx.drawImage(logoWatermark, dx, dy, dWidth, dHeight);
         download('cyclotron.png', canvas.toDataURL('image/png'));
     }
+    takePhotoButton.addEventListener('mousedown', function(){
+        takePhotoButton.src = "img/shutter-pressed.png";
+    });
+    takePhotoButton.addEventListener('ontouchstart', function(){
+        takePhotoButton.src = "img/shutter-pressed.png";
+    });
+    takePhotoButton.addEventListener('mouseup', function(){
+        takePhotoButton.src = "img/shutter-button.png";
+    });
+    takePhotoButton.addEventListener('ontouchend', function(){
+        takePhotoButton.src = "img/shutter-button.png";
+    });
 
     // recordVideoButton.addEventListener('click', recordVideo);
     // function recordVideo() {
@@ -242,6 +272,7 @@
 </script>
 <div id="invisible-assets" style="display:none;">
     <img id="logoWatermark" src="img/logo.svg">
+    <img id="pressedShutterButton" src="img/shutter-pressed.png">
 </div>
 </body>
 </html>
