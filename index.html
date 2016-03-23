@@ -7,10 +7,7 @@
 
     <style>
     body, html {
-        height: 100vh;
-        width: 100vw;
-        margin: 0;
-        padding: 0;
+        font-family: sans-serif;
     }
 
     #display {
@@ -18,6 +15,10 @@
         height: 100vh;
         width: 100vw;
         z-index: -1;
+    }
+
+    #entertainThePeasants {
+        padding: 20px;
     }
 
     #video {display: none;}
@@ -31,6 +32,15 @@
         padding-left: 3vw;
         padding-right: 3vw;
         z-index: 1;
+    }
+
+    #viewer {
+        display: none;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
     }
 
     #cameraToggleForChrome {
@@ -105,51 +115,43 @@
         outline: none;
     }
 
-    #browserNotSupported {
-        display: none;
-        background-color: white;
-    }
     </style>
 </head>
-<body style="background-color:black;">
-    <div id="browserNotSupported">
-        <h1>Fail!</h1>
-        <p>It looks like this browser can't Cyclotron.</p> 
-        <p>If you're on Android, then try an up-to-date version of <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.</p>
+<body>
+    <div id="entertainThePeasants">
+        <h1>Cyclotron Viewer</h1>
+        <h2>See Light Painting in Real Time Through Augmented Reality</h2>
         <p>
-            If you're on an iPhone, then unfortunately you're out of luck &ndash; Apple haven't put the necessary technology into Safari, and they've decided you shouldn't have the right to choose a better browser. Facism sucks, hey? At least they spy on you less than Google does. In the meantime, you'll have to go borrow someone with Android, or use your laptop with Firefox or Chrome.
+            Go on, lend us your camera! Click that <em>Allow</em> button. We promise not to peek at you. Much.
+        </p>
+        <p>
+            Didn't see anything pop up asking for camera access? That's awkward&#8230; Maybe this browser can't Cyclotron?
+        </p>
+        <p>
+            If you're on Android, then try an up-to-date version of <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.
+        </p>
+        <p>
+            If you're on an iPhone, then unfortunately you might be out of luck &ndash; Apple have let Safari fall behind the times, and they've decided you shouldn't have the right to choose a better browser (by Apple's fiat, Firefox and Chrome on iPhone are just prettier wrappers around a dumbed-down Safari). Facism sucks, hey? At least Apple are spying on you less than Google.</p>
+        <p>
+            In the meantime, if you're an iPhone user and want to see pretty lights then you'll have to go borrow someone with Android, or use your laptop with Firefox or Chrome. Or search the App Store for “light painting” or “long exposure”.
         </p>
     </div>
-    <canvas id="display"></canvas>
     <video id="video" autoplay></video>
-    <footer>
-        <img src="img/switch-camera.png" id="cameraToggleForChrome">
-        <!-- <button id="recordVideoButton">Record Video</button> -->
-        <button id="takePhotoButton">
-            <img src="img/shutter-button.png" />
-        </button>
-    </footer>
+    <div id="viewer">
+        <canvas id="display"></canvas>
+        <footer id="controlFooter">
+            <img src="img/switch-camera.png" id="cameraToggleForChrome">
+            <!-- <button id="recordVideoButton">Record Video</button> -->
+            <button id="takePhotoButton">
+                <img src="img/shutter-button.png" />
+            </button>
+        </footer>
+    </div>
 
 <script type="text/javascript" src="js/adapter.js"></script>
 <!-- <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script> -->
 <script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
 <script type="text/javascript">
-    function abandonShip() {
-        document.getElementsByTagName('footer')[0].style.display = 'none'
-        var body = document.getElementsByTagName('body')[0];
-        body.style.backgroundColor = 'white';
-        body.style.margin = '20px';
-        body.style.width = 'auto';
-        body.style.height = 'auto';
-        display.style.display = 'none';
-        browserNotSupported.style.display = 'inline';
-    }
-
-    if (!webrtcMinimumVersion || !webrtcDetectedVersion || webrtcDetectedVersion < webrtcMinimumVersion)
-    {
-        abandonShip()
-    }
-
     if (webrtcDetectedBrowser != 'chrome') {
         var constraints = {audio: false, video: { facingMode: 'environment' }};
         attachStream(constraints);
@@ -168,6 +170,8 @@
         .then(function(stream) {
             window.stream = stream;
             video.srcObject = stream;
+            document.getElementById('entertainThePeasants').style.display = 'none'
+            document.getElementById('viewer').style.display = 'block'
         })
         .catch(err => console.error(err));
     }
