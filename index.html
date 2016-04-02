@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset='utf-8'>
+    <meta name=viewport content="width=device-width, initial-scale=1">
 
     <title>Cyclotron Viewer</title>
 
@@ -131,9 +132,7 @@
             If you're on Android, then try an up-to-date version of <a target="_blank" href="https://www.getfirefox.com/">Firefox</a> or <a target="_blank" href="https://www.google.com/chrome/">Chrome</a>.
         </p>
         <p>
-            If you're on an iPhone, then unfortunately you might be out of luck &ndash; Apple have let Safari fall behind the times, and they've decided you shouldn't have the right to choose a better browser (by Apple's fiat, Firefox and Chrome on iPhone are just prettier wrappers around a dumbed-down Safari). Facism sucks, hey? At least Apple are spying on you less than Google.</p>
-        <p>
-            In the meantime, if you're an iPhone user and want to see pretty lights then you'll have to go borrow someone with Android, or use your laptop with Firefox or Chrome. Or search the App Store for “light painting” or “long exposure”.
+            If you're on an iPhone, then unfortunately you're out of luck. Some day Apple might update Safari to have the goodies we need, but until then you'll have to go borrow someone with Android, or use a laptop with Firefox or Chrome. Or maybe you can find something on the App Store &ndash; search for “light painting” or “long exposure”.
         </p>
     </div>
     <video id="video" autoplay></video>
@@ -150,7 +149,7 @@
 
 <script type="text/javascript" src="js/adapter.js"></script>
 <!-- <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script> -->
-<script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script> -->
 <script type="text/javascript">
     if (webrtcDetectedBrowser != 'chrome') {
         var constraints = {audio: false, video: { facingMode: 'environment' }};
