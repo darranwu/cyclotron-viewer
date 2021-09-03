@@ -2,13 +2,8 @@ var constraints = {audio: false, video: { facingMode: 'environment' }};
 attachStream(constraints);
 
 function attachStream(constraints) {
-    if (window.stream) {
-        // Required for Chrome
-        window.stream.getTracks().forEach(track => track.stop());
-    }
     navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
-        window.stream = stream;
         video.srcObject = stream;
         document.getElementById('entertainThePeasants').style.display = 'none'
         document.getElementById('viewer').style.display = 'block'
