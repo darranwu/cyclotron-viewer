@@ -6,17 +6,20 @@ if (!supports["width"] || !supports["height"]) {
     let constraints = {
         width: { min: 640, ideal: 1920, max: 1920 },
         height: { min: 480, ideal: 1080 },
-        aspectRatio: 1.777777778};
+        aspectRatio: {1.777777778},
+        audio: false,
+        video: {facingMode: 'environment'}
+    };
 
     myTrack.applyConstraints(constraints).then(function() => {
-        /* do stuff if constraints applied successfully */
+        attachStream(constraints);
     }).catch(function(reason) {
         /* failed to apply constraints; reason is why */
     });
 }
 
-var constraints = {audio: false, video: { facingMode: 'environment' }};
-attachStream(constraints);
+// var constraints = {audio: false, video: { facingMode: 'environment' }};
+// attachStream(constraints);
 
 function attachStream(constraints) {
     navigator.mediaDevices.getUserMedia(constraints)
