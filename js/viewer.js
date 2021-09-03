@@ -1,3 +1,19 @@
+let supports = navigator.mediaDevices.getSupportedConstraints();
+
+if (!supports["width"] || !supports["height"]) {
+    // We're missing needed properties, so handle that error.
+} else {
+    let constraints = {
+        width: { min: 640, ideal: 1920, max: 1920 },
+        height: { min: 480, ideal: 1080 },
+        aspectRatio: 1.777777778};
+
+    myTrack.applyConstraints(constraints).then(function() => {
+        /* do stuff if constraints applied successfully */
+    }).catch(function(reason) {
+        /* failed to apply constraints; reason is why */
+    });
+
 var constraints = {audio: false, video: { facingMode: 'environment' }};
 attachStream(constraints);
 
