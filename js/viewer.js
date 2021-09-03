@@ -1,11 +1,5 @@
-if (webrtcDetectedBrowser != 'chrome') {
-    var constraints = {audio: false, video: { facingMode: 'environment' }};
-    attachStream(constraints);
-} else {
-    var chromeVideoDeviceInfos;
-    var chromeVideoDeviceIndex = 0;
-    getSourcesForChrome();
-}
+var constraints = {audio: false, video: { facingMode: 'environment' }};
+attachStream(constraints);
 
 function attachStream(constraints) {
     if (window.stream) {
@@ -104,38 +98,4 @@ function download(filename, dataURL) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}
-
-function getSourcesForChrome() {
-    navigator.mediaDevices.enumerateDevices()
-        .then(gotDevicesForChrome)
-        .catch(err => console.error(err));
-}
-
-function gotDevicesForChrome(deviceInfos) {
-    console.log(deviceInfos);
-    chromeVideoDeviceInfos = deviceInfos.filter(
-        (el, i, arr) => (el.kind === 'videoinput') 
-    );
-    if (chromeVideoDeviceInfos.length > 1) {
-        showCameraToggleButtonForChrome();
-    }
-    var constraints = {audio: false, video: { deviceId: chromeVideoDeviceInfos[chromeVideoDeviceIndex].deviceId }};
-    attachStream(constraints);
-}
-
-function changeDeviceForChrome() {
-    chromeVideoDeviceIndex = (chromeVideoDeviceIndex + 1) % chromeVideoDeviceInfos.length;
-    var constraints = {audio: false, video: { deviceId: chromeVideoDeviceInfos[chromeVideoDeviceIndex].deviceId }};
-    attachStream(constraints);
-}
-
-function showCameraToggleButtonForChrome() {
-    var button = document.getElementById('cameraToggleForChrome');
-    cameraToggleForChrome.style.display = 'inline';
-    // recordVideoButton.style.display = 'inline';
-    cameraToggleForChrome.addEventListener('click', function(ev){
-        changeDeviceForChrome();
-        ev.preventDefault();
-    }, false);
 }
