@@ -13,6 +13,7 @@ if (!supports["width"] || !supports["height"]) {
     }).catch(function(reason) {
         /* failed to apply constraints; reason is why */
     });
+}
 
 var constraints = {audio: false, video: { facingMode: 'environment' }};
 attachStream(constraints);
